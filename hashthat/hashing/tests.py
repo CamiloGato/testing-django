@@ -1,6 +1,7 @@
 from django.test import TestCase
-
 from selenium import webdriver
+
+from .forms import HashForm
 
 # class FunctionalTestCase(TestCase):
 
@@ -19,3 +20,7 @@ class UnitTestCase(TestCase):
     def test_home_homepage_template(self):
         response = self.client.get('/')
         self.assertTemplateUsed(response, 'hashing/home.html')
+
+    def test_hash_form(self):
+        form = HashForm(data={'text':'hello'})
+        self.assertTrue(form.is_valid())
