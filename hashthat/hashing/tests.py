@@ -14,8 +14,3 @@ class FunctionalTestCase(TestCase):
     def tearDown(self):
         self.browser.quit()
     
-
-
-
-
-
