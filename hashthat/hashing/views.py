@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.http import JsonResponse
 
 from .forms import HashForm
 from .models import Hash
@@ -32,3 +33,9 @@ def hash(request, hash):
     hash = Hash.objects.get(hash=hash)
     context = {'hash':hash}
     return render(request, 'hashing/hash.html', context)
+
+def quickhash(request):
+    text = request.GET['text']
+    text_hash = hashlib.sha256(text.encode('utf-8')).hexdigest()
+
+    return JsonResponse({'hash':text_hash})
