@@ -1,6 +1,41 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.http import JsonResponse
+
+from .forms import HashForm
+from .models import Hash
+
+import hashlib
 
 # Create your views here.
 
 def home(request):
-    return render(request, 'hashing/home.html')
+
+    if request.method == "POST":
+        filled_form = HashForm(request.POST)
+        if filled_form.is_valid():
+            text = filled_form.cleaned_data['text']
+            text_hash = hashlib.sha256(text.encode('utf-8')).hexdigest()
+            try:
+                Hash.objects.get(hash=text_hash)
+            except Hash.DoesNotExist:
+                hash = Hash()
+                hash.text = text
+                hash.hash = text_hash
+                hash.save()
+            
+            return redirect('hash', hash=text_hash)
+
+    form = HashForm()
+    context = {'form':form}
+    return render(request, 'hashing/home.html', context)
+
+def hash(request, hash):
+    hash = Hash.objects.get(hash=hash)
+    context = {'hash':hash}
+    return render(request, 'hashing/hash.html', context)
+
+def quickhash(request):
+    text = request.GET['text']
+    text_hash = hashlib.sha256(text.encode('utf-8')).hexdigest()
+
+    return JsonResponse({'hash':text_hash})
